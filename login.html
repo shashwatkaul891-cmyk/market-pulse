@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In • Market Pulse</title>
+  <link rel="stylesheet" href="auth.css">
+</head>
+<body class="auth">
+  <div class="panel">
+    <!-- Brand Header -->
+    <div class="brand-header">
+      <div class="brand">
+        <div class="logo">$</div>
+        <h1 class="brand-name">Market Pulse</h1>
+      </div>
+      <p class="brand-tagline">Trading Platform</p>
+    </div>
+
+    <!-- Form Header -->
+    <div class="form-header">
+      <h2 class="form-title">Sign In</h2>
+      <p class="form-subtitle">Enter your credentials to access your account</p>
+    </div>
+
+    <!-- Login Form -->
+    <form id="login-form" novalidate>
+      <!-- Email Field -->
+      <div class="form-group">
+        <label class="form-label" for="email">Email</label>
+        <div class="input-container">
+          <input type="email" id="email" class="form-input" placeholder="john@example.com" required>
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <div class="input-container">
+          <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+          <button type="button" class="input-icon password-toggle" data-target="password">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Remember Me & Forgot Password -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin: 8px 0;">
+        <div class="checkbox-container" style="margin: 0;">
+          <input type="checkbox" id="remember" class="checkbox">
+          <label for="remember" class="checkbox-label">Remember me</label>
+        </div>
+        <a href="#" class="link" style="font-size: 14px;">Forgot password?</a>
+      </div>
+
+      <!-- Action Buttons -->
+      <button type="submit" class="btn btn-primary btn-block">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m15 3 4 4L7 19l-4-1 1-4L15 3z"/>
+        </svg>
+        Sign In
+      </button>
+
+      <button type="button" class="btn btn-secondary btn-block" onclick="tryDemo()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="m2 17 10 5 10-5"/>
+          <path d="m2 12 10 5 10-5"/>
+        </svg>
+        Try Demo Account
+      </button>
+    </form>
+
+    <!-- Footer -->
+    <div class="form-footer">
+      <p class="footer-text">
+        Don't have an account? <a href="signup.html" class="link">Sign up</a>
+      </p>
+      
+      <div class="disclaimer">
+        This is a paper trading platform for educational purposes only.<br>
+        <span class="disclaimer-highlight">No real money is involved in any transactions.</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script>
+    // Demo Account Handler
+    function tryDemo() {
+      // Create a demo account session
+      const demoUser = {
+        fullName: 'Demo User',
+        email: 'demo@marketpulse.com',
+        isDemo: true
+      };
+      
+      localStorage.setItem('auth_user_demo', JSON.stringify(demoUser));
+      window.location.href = 'index.html';
+    }
+
+    // Password Toggle Functionality
+    document.querySelectorAll('.password-toggle').forEach(toggle => {
+      toggle.addEventListener('click', function() {
+        const targetId = this.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        const isPassword = input.type === 'password';
+        
+        input.type = isPassword ? 'text' : 'password';
+        
+        // Update icon
+        const svg = this.querySelector('svg');
+        if (isPassword) {
+          svg.innerHTML = `
+            <path d="m9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+            <path d="m10.73 5.08 1.12.38a3 3 0 0 1 1.46 1.46l.38 1.12"/>
+            <path d="m15 12h5l-1.5-1.5"/>
+            <path d="M2 2l20 20"/>
+            <path d="m1 12 8.5-8.5"/>
+          `;
+        } else {
+          svg.innerHTML = `
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          `;
+        }
+      });
+    });
+
+    // Form Enhancement
+    document.addEventListener('DOMContentLoaded', function() {
+      const inputs = document.querySelectorAll('.form-input');
+      
+      inputs.forEach(input => {
+        // Add focus/blur effects
+        input.addEventListener('focus', function() {
+          this.parentElement.parentElement.style.transform = 'scale(1.02)';
+          this.parentElement.parentElement.style.transition = 'transform 0.2s ease';
+        });
+        
+        input.addEventListener('blur', function() {
+          this.parentElement.parentElement.style.transform = 'scale(1)';
+        });
+      });
+
+      // Auto-fill demo credentials
+      const demoBtn = document.querySelector('.btn-secondary');
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      
+      // Add quick demo login option
+      const demoQuickFill = document.createElement('small');
+      demoQuickFill.innerHTML = '<a href="#" class="link" style="font-size: 12px;">Quick fill demo credentials</a>';
+      demoQuickFill.style.textAlign = 'center';
+      demoQuickFill.style.display = 'block';
+      demoQuickFill.style.marginTop = '8px';
+      
+      demoQuickFill.querySelector('a').addEventListener('click', function(e) {
+        e.preventDefault();
+        emailInput.value = 'demo@marketpulse.com';
+        passwordInput.value = 'demo123456';
+        
+        // Add visual feedback
+        emailInput.style.background = 'rgba(16, 185, 129, 0.05)';
+        passwordInput.style.background = 'rgba(16, 185, 129, 0.05)';
+        
+        setTimeout(() => {
+          emailInput.style.background = '';
+          passwordInput.style.background = '';
+        }, 1000);
+      });
+      
+      demoBtn.parentElement.insertBefore(demoQuickFill, demoBtn.nextSibling);
+    });
+  </script>
+</body>
+</html>

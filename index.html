@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Market Pulse • Dashboard</title>
+  <link rel="stylesheet" href="main.css" />
+  <script src="https://s3.tradingview.com/tv.js"></script>
+</head>
+<body>
+   <!-- Top bar -->
+  <nav class="topbar">
+    <div class="brand">
+      <div class="brand-logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <rect x="4" y="4" width="22" height="22" rx="4" fill="#6366f1"/>
+          <text x="14" y="18" text-anchor="middle" fill="white" font-size="12" font-weight="bold">$</text>
+        </svg>
+      </div>
+      <span class="brand-text">Market Pulse</span>
+    </div>
+    <div class="actions">
+      <div class="search-wrap">
+        <input id="global-search" placeholder="Search pairs... (e.g. BTCUSDT, EURUSD)" />
+      </div>
+      <!-- Theme toggle -->
+      <div class="theme-wrap">
+        <button id="theme-toggle" class="ghost" title="Toggle Theme">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Alerts quick open -->
+      <button id="open-alerts" class="ghost" title="Price Alerts">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="13" r="8"></circle>
+          <path d="M12 9l0 4"></path>
+          <path d="M12 17l.01 0"></path>
+        </svg>
+        Alerts
+      </button>
+
+      <div class="user">
+        <span id="user-name">—</span>
+        <button id="logout" class="ghost">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16,17 21,12 16,7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="shell">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <nav class="nav-menu">
+        <button class="nav-item active" data-section="markets">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"></polyline>
+          </svg>
+          Markets
+        </button>
+        <button class="nav-item" data-section="trading">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M12 1v6m0 6v6"></path>
+          </svg>
+          Trading Terminal
+        </button>
+        <button class="nav-item" data-section="settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M12 1v6m0 6v6"></path>
+            <path d="M21 12h-6m-6 0H3"></path>
+          </svg>
+          Settings
+        </button>
+      </nav>
+
+      <!-- Market Watch - Only visible in Markets section -->
+      <div class="side-card market-watch-card">
+        <h4>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; margin-right: 0.5rem;">
+            <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"></polyline>
+          </svg>
+          Market Watch
+        </h4>
+        <ul id="watchlist"></ul>
+      </div>
+
+      <!-- Account Overview - Only visible in Trading section -->
+      <div class="side-card mini-metrics trading-metrics-card" style="display: none;">
+        <h4>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; margin-right: 0.5rem;">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+          Account Overview
+        </h4>
+        <div>
+          <span>Balance</span>
+          <strong>$<span id="balance">100,000.00</span></strong>
+        </div>
+        <div>
+          <span>Unrealized P&L</span>
+          <strong>$<span id="unrealized">0.00</span></strong>
+        </div>
+        <div>
+          <span>Total Equity</span>
+          <strong>$<span id="equity">100,000.00</span></strong>
+        </div>
+        <div>
+          <span>Used Margin</span>
+          <strong>$<span id="used-margin">0.00</span></strong>
+        </div>
+        <div>
+          <span>Free Margin</span>
+          <strong>$<span id="free-margin">100,000.00</span></strong>
+        </div>
+        <div>
+          <span>Margin Level</span>
+          <strong><span id="margin-level">∞</span></strong>
+        </div>
+      </div>
+
+      <!-- Quick Actions - Only visible in Trading section -->
+      <div class="side-card trading-actions-card" style="display: none;">
+        <h4>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; margin-right: 0.5rem;">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M12 1v6m0 6v6"></path>
+          </svg>
+          Quick Actions
+        </h4>
+        <button id="open-order-modal" class="primary block">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          New Order
+        </button>
+        <button id="reset-portfolio" class="danger block">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+            <polyline points="1,4 1,10 7,10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          Reset Portfolio
+        </button>
+        <button id="clear-history" class="ghost block">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+            <polyline points="3,6 5,6 21,6"></polyline>
+            <path d="M19,6v14a2 2 0 0 1-2,2H7a2 2 0 0 1-2-2V6m3,0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2,2v2"></path>
+          </svg>
+          Clear History
+        </button>
+      </div>
+
+      <!-- Market News - Only visible in Markets section -->
+      <div class="side-card market-news-card">
+        <h4>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; margin-right: 0.5rem;">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14,2 14,8 20,8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10,9 9,9 8,9"></polyline>
+          </svg>
+          Market News
+        </h4>
+        <ul id="news-list" class="news"></ul>
+      </div>
+    </aside>
+
+    <!-- MARKETS SECTION -->
+    <section id="markets-section" class="content section-content">
+      <section class="grid grid-2">
+        <div class="card">
+          <div class="card-head">
+            <div class="tabs">
+              <button class="tab-btn active" data-tab="crypto">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                  <path d="M2 17l10 5 10-5"></path>
+                  <path d="M2 12l10 5 10-5"></path>
+                </svg>
+                Crypto
+              </button>
+              <button class="tab-btn" data-tab="forex">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+                Forex
+              </button>
+            </div>
+            <div class="pair-picker">
+              <label>Chart Pair</label>
+              <select id="quick-pair"></select>
+            </div>
+          </div>
+
+          <div id="crypto" class="tab-pane active">
+            <table class="table" id="crypto-table">
+              <thead>
+                <tr>
+                  <th>Pair</th>
+                  <th>Price (USD)</th>
+                  <th>24h Change</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div id="forex" class="tab-pane">
+            <table class="table" id="forex-table">
+              <thead>
+                <tr>
+                  <th>Pair</th>
+                  <th>Rate</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"></polyline>
+              </svg>
+              Live Chart
+            </h3>
+          </div>
+          <div id="tradingview_chart" class="tv"></div>
+        </div>
+      </section>
+    </section>
+
+    <!-- TRADING TERMINAL SECTION -->
+    <section id="trading-section" class="content section-content" style="display: none;">
+      <section class="card">
+        <div class="card-head">
+          <h3>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+              <path d="M21 12c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3z"></path>
+              <path d="M9 12c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3z"></path>
+              <path d="M21 6v6"></path>
+              <path d="M9 6v6"></path>
+              <path d="M21 18v-6"></path>
+              <path d="M9 18v-6"></path>
+            </svg>
+            Open Positions
+          </h3>
+        </div>
+        <table class="table" id="positions-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Pair</th>
+              <th>Side</th>
+              <th>Entry</th>
+              <th>Leverage</th>
+              <th>Exposure (USD)</th>
+              <th>Margin</th>
+              <th>Units</th>
+              <th>Stop Loss</th>
+              <th>Take Profit</th>
+              <th>Unrealized P/L ($ / %)</th>
+              <th>Partial Close</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section class="grid grid-2">
+        <div class="card">
+          <div class="card-head">
+            <h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M12 1v6m0 6v6"></path>
+              </svg>
+              Pending Orders
+            </h3>
+          </div>
+          <table class="table" id="pending-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Pair</th>
+                <th>Type</th>
+                <th>Side</th>
+                <th>Trigger Price</th>
+                <th>Leverage</th>
+                <th>Exposure</th>
+                <th>Stop Loss</th>
+                <th>Take Profit</th>
+                <th>Status</th>
+                <th>Cancel</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14,2 14,8 20,8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+              Order History
+            </h3>
+          </div>
+          <table class="table" id="history-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Pair</th>
+                <th>Type</th>
+                <th>Side</th>
+                <th>Entry</th>
+                <th>Exit</th>
+                <th>Leverage</th>
+                <th>Exposure</th>
+                <th>Margin Used</th>
+                <th>Units</th>
+                <th>Realized P/L ($)</th>
+                <th>Realized P/L (%)</th>
+                <th>Reason</th>
+                <th>Closed %</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <!-- SETTINGS SECTION -->
+    <section id="settings-section" class="content section-content" style="display: none;">
+      <div class="card">
+        <div class="card-head">
+          <h3>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M12 1v6m0 6v6"></path>
+              <path d="M21 12h-6m-6 0H3"></path>
+            </svg>
+            General Settings
+          </h3>
+        </div>
+        <div class="settings-grid">
+          <div class="setting-group">
+            <h4>Display Preferences</h4>
+            <label class="setting-item">
+              <span>Theme</span>
+              <select id="theme-setting">
+                <option value="dark">Dark Mode</option>
+                <option value="light">Light Mode</option>
+                <option value="auto">Auto</option>
+              </select>
+            </label>
+            <label class="setting-item">
+              <span>Currency Display</span>
+              <select id="currency-setting">
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="BTC">BTC (₿)</option>
+              </select>
+            </label>
+            <label class="setting-item">
+              <span>Decimal Places</span>
+              <select id="decimal-setting">
+                <option value="2">2 places</option>
+                <option value="4">4 places</option>
+                <option value="6" selected>6 places</option>
+                <option value="8">8 places</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="setting-group">
+            <h4>Trading Preferences</h4>
+            <label class="setting-item">
+              <span>Default Leverage</span>
+              <select id="default-leverage">
+                <option value="1">1x</option>
+                <option value="2">2x</option>
+                <option value="5" selected>5x</option>
+                <option value="10">10x</option>
+                <option value="20">20x</option>
+              </select>
+            </label>
+            <label class="setting-item">
+              <span>Default Position Size (USD)</span>
+              <input id="default-position" type="number" value="5000" min="1" step="1"/>
+            </label>
+            <label class="setting-item">
+              <span>Enable Sound Alerts</span>
+              <input id="sound-alerts" type="checkbox" checked/>
+            </label>
+            <label class="setting-item">
+              <span>Auto-close on Stop Loss</span>
+              <input id="auto-close-sl" type="checkbox" checked/>
+            </label>
+          </div>
+
+          <div class="setting-group">
+            <h4>Risk Management</h4>
+            <label class="setting-item">
+              <span>Maximum Risk per Trade (%)</span>
+              <input id="max-risk" type="number" value="2" min="0.1" max="10" step="0.1"/>
+            </label>
+            <label class="setting-item">
+              <span>Daily Loss Limit (USD)</span>
+              <input id="daily-limit" type="number" value="10000" min="100" step="100"/>
+            </label>
+            <label class="setting-item">
+              <span>Maximum Open Positions</span>
+              <input id="max-positions" type="number" value="10" min="1" max="50" step="1"/>
+            </label>
+          </div>
+
+          <div class="setting-group">
+            <h4>Data & Privacy</h4>
+            <button id="export-data" class="ghost block">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7,10 12,15 17,10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Export Trading Data
+            </button>
+            <button id="clear-all-data" class="danger block">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                <polyline points="3,6 5,6 21,6"></polyline>
+                <path d="M19,6v14a2 2 0 0 1-2,2H7a2 2 0 0 1-2-2V6m3,0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2,2v2"></path>
+              </svg>
+              Clear All Data
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 16v-4"></path>
+              <path d="M12 8h.01"></path>
+            </svg>
+            About Pro Trader
+          </h3>
+        </div>
+        <div class="about-info">
+          <p><strong>Version:</strong> 2.1.0</p>
+          <p><strong>Build:</strong> 2024.01.15</p>
+          <p><strong>Status:</strong> Paper Trading Mode</p>
+          <p><strong>Data Provider:</strong> Real-time market data</p>
+          <div class="disclaimer">
+            <h4>Disclaimer</h4>
+            <p>This is a paper trading application for educational purposes only. All trades are simulated and no real money is involved. Past performance does not guarantee future results.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ORDER MODAL -->
+  <div id="order-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          New Order
+        </h3>
+        <button id="modal-close" class="icon-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-grid">
+          <label>Trading Pair
+            <select id="m-pair"></select>
+          </label>
+          <label>Order Side
+            <select id="m-side">
+              <option value="BUY">Buy (Long)</option>
+              <option value="SELL">Sell (Short)</option>
+            </select>
+          </label>
+          <label>Order Type
+            <select id="m-type">
+              <option value="MARKET">Market Order</option>
+              <option value="LIMIT">Limit Order</option>
+              <option value="STOP">Stop Order</option>
+            </select>
+          </label>
+          <label id="m-price-wrap" class="hidden">Trigger Price
+            <input id="m-price" type="number" step="0.000001" placeholder="e.g. 2350.5"/>
+          </label>
+          <label>Position Size (USD)
+            <input id="m-amount" type="number" min="1" step="1" value="5000" placeholder="Enter amount in USD"/>
+          </label>
+          <label>Leverage
+            <select id="m-lev">
+              <option>1</option>
+              <option>2</option>
+              <option selected>5</option>
+              <option>10</option>
+              <option>20</option>
+            </select>
+          </label>
+          <label>Stop Loss Price (Optional)
+            <input id="m-sl" type="number" step="0.000001" placeholder="Automatic exit price" />
+          </label>
+          <label>Take Profit Price (Optional)
+            <input id="m-tp" type="number" step="0.000001" placeholder="Target profit price" />
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button id="place-order" class="primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+              <polyline points="20,6 9,17 4,12"></polyline>
+            </svg>
+            Place Order
+          </button>
+          <button id="modal-cancel" class="ghost">Cancel</button>
+        </div>
+        <div class="hint">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 16v-4"></path>
+            <path d="M12 8h.01"></path>
+          </svg>
+          Limit/Stop orders trigger when price crosses threshold. SL/TP automatically close positions after order fills.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALERTS MODAL -->
+  <div id="alerts-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          Price Alerts
+        </h3>
+        <button id="alerts-close" class="icon-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-grid">
+          <label>Trading Pair
+            <select id="a-pair"></select>
+          </label>
+          <label>Alert Condition
+            <select id="a-cond">
+              <option value="above">Price Crosses Above</option>
+              <option value="below">Price Crosses Below</option>
+            </select>
+          </label>
+          <label>Target Price
+            <input id="a-price" type="number" step="0.000001" placeholder="Enter alert price" />
+          </label>
+          <label>Alert Frequency
+            <select id="a-repeat">
+              <option value="once">Trigger Once</option>
+              <option value="every">Trigger Every Time</option>
+            </select>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button id="add-alert" class="primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Alert
+          </button>
+          <button id="clear-alerts" class="ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+              <polyline points="3,6 5,6 21,6"></polyline>
+              <path d="M19,6v14a2 2 0 0 1-2,2H7a2 2 0 0 1-2-2V6m3,0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2,2v2"></path>
+            </svg>
+            Clear All Alerts
+          </button>
+        </div>
+        <div class="list-head">
+          <h4>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            Active Alerts
+          </h4>
+        </div>
+        <ul id="alerts-list" class="news"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toaster" class="toaster"></div>
+
+  <script src="main.js"></script>
+</body>
+</html>

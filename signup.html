@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account • Market Pulse</title>
+  <link rel="stylesheet" href="auth.css">
+</head>
+<body class="auth">
+  <div class="panel">
+    <!-- Brand Header -->
+    <div class="brand-header">
+      <div class="brand">
+        <div class="logo">$</div>
+        <h1 class="brand-name">Market Pulse</h1>
+      </div>
+      <p class="brand-tagline">Trading Platform</p>
+    </div>
+
+    <!-- Form Header -->
+    <div class="form-header">
+      <h2 class="form-title">Create Account</h2>
+      <p class="form-subtitle">Fill in your details to create a new account</p>
+    </div>
+
+    <!-- Signup Form -->
+    <form id="signup-form" novalidate>
+      <!-- Name Fields -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="firstName">First Name</label>
+          <div class="input-container">
+            <input type="text" id="firstName" class="form-input" placeholder="John" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="lastName">Last Name</label>
+          <div class="input-container">
+            <input type="text" id="lastName" class="form-input" placeholder="Doe" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email Field -->
+      <div class="form-group">
+        <label class="form-label" for="sEmail">Email</label>
+        <div class="input-container">
+          <input type="email" id="sEmail" class="form-input" placeholder="john@example.com" required>
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label class="form-label" for="sPassword">Password</label>
+        <div class="input-container">
+          <input type="password" id="sPassword" class="form-input" placeholder="Enter your password" required>
+          <button type="button" class="input-icon password-toggle" data-target="sPassword">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div class="form-group">
+        <label class="form-label" for="sConfirm">Confirm Password</label>
+        <div class="input-container">
+          <input type="password" id="sConfirm" class="form-input" placeholder="Confirm your password" required>
+          <button type="button" class="input-icon password-toggle" data-target="sConfirm">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Terms Checkbox -->
+      <div class="checkbox-container">
+        <input type="checkbox" id="terms" class="checkbox" required>
+        <label for="terms" class="checkbox-label">
+          I agree to the <a href="#" class="link">Terms of Service</a> and <a href="#" class="link">Privacy Policy</a>
+        </label>
+      </div>
+
+      <!-- Action Buttons -->
+      <button type="submit" class="btn btn-primary btn-block">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="m22 2-5 10-3-3-10 5"/>
+        </svg>
+        Create Account
+      </button>
+
+      <button type="button" class="btn btn-secondary btn-block" onclick="tryDemo()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="m2 17 10 5 10-5"/>
+          <path d="m2 12 10 5 10-5"/>
+        </svg>
+        Try Demo Account
+      </button>
+    </form>
+
+    <!-- Footer -->
+    <div class="form-footer">
+      <p class="footer-text">
+        Already have an account? <a href="login.html" class="link">Sign in</a>
+      </p>
+      
+      <div class="disclaimer">
+        This is a paper trading platform for educational purposes only.<br>
+        <span class="disclaimer-highlight">No real money is involved in any transactions.</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script>
+    // Demo Account Handler
+    function tryDemo() {
+      // Create a demo account session
+      const demoUser = {
+        fullName: 'Demo User',
+        email: 'demo@marketpulse.com',
+        isDemo: true
+      };
+      
+      localStorage.setItem('auth_user_demo', JSON.stringify(demoUser));
+      window.location.href = 'index.html';
+    }
+
+    // Password Toggle Functionality
+    document.querySelectorAll('.password-toggle').forEach(toggle => {
+      toggle.addEventListener('click', function() {
+        const targetId = this.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        const isPassword = input.type === 'password';
+        
+        input.type = isPassword ? 'text' : 'password';
+        
+        // Update icon
+        const svg = this.querySelector('svg');
+        if (isPassword) {
+          svg.innerHTML = `
+            <path d="m9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+            <path d="m10.73 5.08 1.12.38a3 3 0 0 1 1.46 1.46l.38 1.12"/>
+            <path d="m15 12h5l-1.5-1.5"/>
+            <path d="M2 2l20 20"/>
+            <path d="m1 12 8.5-8.5"/>
+          `;
+        } else {
+          svg.innerHTML = `
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          `;
+        }
+      });
+    });
+
+    // Form Enhancement
+    document.addEventListener('DOMContentLoaded', function() {
+      const inputs = document.querySelectorAll('.form-input');
+      
+      inputs.forEach(input => {
+        // Add focus/blur effects
+        input.addEventListener('focus', function() {
+          this.parentElement.parentElement.style.transform = 'scale(1.02)';
+          this.parentElement.parentElement.style.transition = 'transform 0.2s ease';
+        });
+        
+        input.addEventListener('blur', function() {
+          this.parentElement.parentElement.style.transform = 'scale(1)';
+        });
+      });
+    });
+  </script>
+</body>
+</html>
